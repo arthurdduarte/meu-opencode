@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "hybrid": {
+    "enabled": true,
+    "docsPaths": [],
+    "embeddingModel": "mxbai-embed-large",
+    "localEndpoint": "http://localhost:11434",
+    "localModel": "qwen2.5:7b",
+    "keepAliveMinutes": 30,
+    "minSimilarity": 0.65,
+    "maxContextChunks": 5
+  }
+}

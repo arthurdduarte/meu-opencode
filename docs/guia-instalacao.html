@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia — Instalar o pacote Meu-opencode num ambiente limpo</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222c; --line:#2a2f3a;
+    --fg:#e6e8ee; --muted:#9aa3b2; --accent:#4f8cff; --accent2:#37d67a;
+    --warn:#ffb347; --danger:#ff6b6b; --code:#0c0e13;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    line-height:1.6}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 20px 80px}
+  h1{font-size:1.9rem;line-height:1.25;border-bottom:2px solid var(--line);padding-bottom:14px}
+  h2{font-size:1.35rem;margin-top:2.2em;padding-left:10px;border-left:4px solid var(--accent)}
+  h3{font-size:1.08rem;color:var(--accent2);margin-top:1.6em}
+  p{margin:.5em 0}
+  a{color:var(--accent)}
+  .lead{color:var(--muted);font-size:1.05rem}
+  .tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:20px;
+    vertical-align:middle;margin-left:6px;font-weight:600;letter-spacing:.3px}
+  .tag-ok{background:#123523;color:var(--accent2)}
+  .tag-warn{background:#3a2d13;color:var(--warn)}
+  .tag-bad{background:#3a1414;color:var(--danger)}
+  .tag-info{background:#13233a;color:var(--accent)}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;overflow:auto;font-size:.85rem;line-height:1.5}
+  code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.85em}
+  pre code{background:none;padding:0}
+  .callout{border:1px solid var(--line);border-left:4px solid var(--accent);
+    background:var(--panel);border-radius:8px;padding:12px 16px;margin:16px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.danger{border-left-color:var(--danger)}
+  .callout.ok{border-left-color:var(--accent2)}
+  .callout b.t{color:var(--accent)}
+  .callout.warn b.t{color:var(--warn)}
+  .callout.danger b.t{color:var(--danger)}
+  .callout.ok b.t{color:var(--accent2)}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.9rem}
+  th,td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+  th{background:var(--panel2);font-weight:600}
+  tr:nth-child(even) td{background:var(--panel)}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:18px 20px;margin:18px 0}
+  .step .num{display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+    font-weight:700;font-size:.9rem;margin-right:10px;vertical-align:middle}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px}
+  .toc a{display:block;text-decoration:none;color:var(--fg);padding:3px 0}
+  .toc a:hover{color:var(--accent)}
+  .toc .lvl2{padding-left:18px;color:var(--muted);font-size:.92rem}
+  .small{font-size:.82rem;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .card b{color:var(--accent2)}
+  .card .cnt{font-size:1.6rem;font-weight:700;color:var(--fg)}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:4px;padding:1px 6px;font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Guia — Instalar o pacote <span style="color:var(--accent)">Meu-opencode</span> num ambiente limpo <span class="tag tag-info">opencode v1.18.15</span></h1>
+<p class="lead">Este guia restaura, numa máquina nova (ex.: após formatar), toda a configuração
+customizada do opencode: providers, MCP, 27 subagentes, 4 skills, o plugin <code>graphify</code>
+e o <code>.opencode/</code> do projeto Rio Verde Concurso.</p>
+
+<div class="callout warn"><b class="t">Antes de começar</b> — é preciso ter <code>git</code>, <code>curl</code> e
+internet. O pacote <b>não</b> contém segredos (chaves de API) nem o binário do opencode — eles são
+restaurados/sanitizados como explicado nos passos 3 e 4.</div>
+
+<div class="toc">
+  <b>Sumário</b>
+  <a href="#s1">1. O que este pacote restaura</a>
+  <a href="#s2">2. Pré-requisitos do sistema</a>
+  <a href="#s3">3. Obter o pacote e preencher os segredos</a>
+  <a href="#s4">4. Instalar (install.sh)</a>
+  <a href="#s5">5. Verificar a instalação</a>
+  <a href="#s6">6. Restaurar o .opencode/ do projeto concurso (opcional)</a>
+  <a href="#s7">7. Pós-instalação: login, MCP e skills</a>
+  <a href="#s8">8. Solução de problemas</a>
+</div>
+
+<h2 id="s1">1. O que este pacote restaura</h2>
+<p>Uma instalação <b>recém-instalada</b> do opencode traz apenas os agentes built-in
+(<code>build</code>, <code>plan</code>, <code>general</code>, <code>explore</code>) e nenhuma
+configuração. O pacote adiciona tudo isto:</p>
+
+<div class="grid">
+  <div class="card"><div class="cnt">27</div><b>Agentes globais</b><br><span class="small">6 jarvis-* + 15 manas-* + 6 sec-* (pipeline web, knowledge graph, pentest)</span></div>
+  <div class="card"><div class="cnt">4</div><b>Skills globais</b><br><span class="small">graphify, jarvis-web-team, manas-ciel, sec-audit-team</span></div>
+  <div class="card"><div class="cnt">1</div><b>MCP habilitado</b><br><span class="small">gitnexus (npx); context7/github desabilitados</span></div>
+  <div class="card"><div class="cnt">1</div><b>Provider</b><br><span class="small">9router local (Combo01) como modelo default</span></div>
+</div>
+
+<p>Além disso: o <b>plugin graphify.js</b> (hook que sugere o knowledge graph em comandos bash),
+o PATH do opencode no <code>~/.bashrc</code> e — opcional — os <b>15 agentes revisor-*</b>, 12
+commands, 2 prompts e 5 skills <code>openspec-*</code> do projeto concurso.</p>
+
+<h2 id="s2">2. Pré-requisitos do sistema</h2>
+<p>Na máquina nova, instale o essencial:</p>
+<pre><code>sudo apt update
+sudo apt install -y git curl nodejs npm python3 python3-pip pipx
+pipx ensurepath && source ~/.bashrc</code></pre>
+<div class="callout ok"><b class="t">Por quê</b> — <code>node</code>/<code>npm</code> são usados pelo MCP
+gitnexus (roda via <code>npx</code>); <code>pipx</code> instala a skill graphify (binário <code>graphify</code>).</div>
+
+<h2 id="s3">3. Obter o pacote e preencher os segredos</h2>
+<div class="step"><span class="num">1</span><b>Clone/abre o pacote</b>
+<pre><code>git clone &lt;url-do-repo-Meu-opencode&gt; ~/Projects/Meu-opencode
+cd ~/Projects/Meu-opencode</code></pre>
+<p class="small">Se você só tem o diretório (pen drive / backup), copie-o para <code>~/Projects/Meu-opencode</code>.</p>
+</div>
+
+<div class="step"><span class="num">2</span><b>Preencha os placeholders de segredos</b>
+<p>Edite estes dois arquivos e troque os placeholders pelas suas chaves reais:</p>
+<pre><code># ~/Projects/Meu-opencode/backup/config-global/opencode.jsonc
+"CONTEXT7_API_KEY": "SEU_CONTEXT7_API_KEY"     # → sua chave context7
+"Authorization": "Bearer SEU_GITHUB_TOKEN"     # → seu GitHub PAT
+"apiKey": "SUA_OPENAI_API_KEY"                 # → sua chave OpenAI
+
+# ~/Projects/Meu-opencode/backup/config-global/opencode.json
+"apiKey": "SUA_CHAVE_9ROUTER"                  # → chave do seu 9router (ex.: sk_9router)</code></pre>
+<div class="callout warn"><b class="t">Alternativa automática</b> — em vez de editar, exporte as env vars e o
+install.sh substitui sozinho: <code>OPENCODE_CONTEXT7_API_KEY</code>, <code>OPENCODE_GITHUB_TOKEN</code>,
+<code>OPENCODE_OPENAI_API_KEY</code>, <code>OPENCODE_9ROUTER_KEY</code>.</div>
+<p class="small">As chaves <code>context7</code> e <code>github</code> estão em MCPs <b>desabilitados</b> — pode
+deixá-las com placeholder se não for usá-las.</p>
+</div>
+
+<h2 id="s4">4. Instalar (install.sh)</h2>
+<div class="step"><span class="num">3</span><b>Rode o instalador</b>
+<pre><code>./install.sh --dry-run    # 1º: veja o que será feito (nada muda)
+./install.sh              # 2º: aplica de verdade</code></pre>
+</div>
+
+<p>O instalador executa 5 passos:</p>
+<table>
+  <tr><th>Passo</th><th>O que faz</th><th>Observação</th></tr>
+  <tr><td>1/5</td><td>Baixa o binário do opencode (script oficial) para <code>~/.opencode/bin</code></td><td>Pula se já instalado; use <code>--skip-binary</code> para forçar pular</td></tr>
+  <tr><td>2/5</td><td>Copia config global → <code>~/.config/opencode/</code> (json, jsonc, agent/, skills/)</td><td>Faz backup automático do arquivo existente</td></tr>
+  <tr><td>3/5</td><td>Copia o plugin <code>graphify.js</code> → <code>~/.opencode/plugins/</code> e adiciona o PATH no <code>~/.bashrc</code></td><td>PATH só é adicionado se ainda não existir</td></tr>
+  <tr><td>4/5</td><td>Instala <code>graphifyy</code> via pipx (skill graphify)</td><td>Pula se <code>graphify</code> já existir</td></tr>
+  <tr><td>5/5</td><td>Substitui placeholders de segredos por env vars (se exportadas)</td><td>Avisa quais continuam pendentes</td></tr>
+</table>
+
+<h2 id="s5">5. Verificar a instalação</h2>
+<div class="step"><span class="num">4</span><b>Checagem pós-instalação</b>
+<pre><code>./scripts/verificar.sh</code></pre>
+<p>Confere binário e versão, config global, os 27 agentes, as 4 skills, o plugin graphify,
+o PATH e as dependências. Esperado: <code>18 ok, 0 falhas</code>.</p>
+</div>
+
+<h2 id="s6">6. Restaurar o .opencode/ do projeto concurso (opcional)</h2>
+<p>O <code>.opencode/</code> do repo Rio Verde Concurso (agentes revisor-*, commands <code>corrigir-dia*</code>,
+prompts <code>fase2-v2*</code>, skills <code>openspec-*</code>) é <b>específico do projeto</b>, então é aplicado
+dentro do repositório, não globalmente:</p>
+<pre><code>cd /caminho/para/Projeto-Concurso-RioVerde2026
+~/Projects/Meu-opencode/scripts/aplicar-projeto.sh .</code></pre>
+<p class="small">Também dá para usar <code>./install.sh --com-projeto</code> para copiar para o diretório atual.</p>
+
+<h2 id="s7">7. Pós-instalação: login, MCP e skills</h2>
+<ol>
+  <li><b>Login</b>: o pacote <u>não</u> copia <code>~/.local/share/opencode/auth.json</code>. Refazer:
+    <pre><code>opencode auth login</code></pre></li>
+  <li><b>Recarregue o shell</b> para pegar o PATH novo:
+    <pre><code>source ~/.bashrc
+opencode --version        # deve mostrar 1.18.x</code></pre></li>
+  <li><b>MCP gitnexus</b>: habilitado no <code>opencode.jsonc</code>; na 1ª execução o opencode baixa o pacote
+    via <code>npx</code> automaticamente.</li>
+  <li><b>Skill graphify</b>: instalei o binário via pipx (passo 4). O índice do grafo (<code>graphify-out/</code>)
+    é por projeto — rode <code>graphify index</code> dentro de cada projeto quando quiser.</li>
+  <li><b>Reinicie o opencode</b> para carregar toda a config nova.</li>
+</ol>
+
+<h2 id="s8">8. Solução de problemas</h2>
+<table>
+  <tr><th>Sintoma</th><th>Causa provável</th><th>Correção</th></tr>
+  <tr><td>opencode não abre / erro de config</td><td>Placeholder de segredo não preenchido ou JSON quebrado</td><td>Edite <code>~/.config/opencode/opencode.json*</code>. Em emergência use <code>OPENCODE_DISABLE_PROJECT_CONFIG=1</code></td></tr>
+  <tr><td><code>graphify</code> não encontrado</td><td>pipx ausente ou <code>pipx ensurepath</code> não rodado</td><td><code>pipx install graphifyy</code> e reabra o shell</td></tr>
+  <tr><td>MCP gitnexus não conecta</td><td>node/npm ausente</td><td><code>sudo apt install -y nodejs npm</code></td></tr>
+  <tr><td>Modelo 9router não responde</td><td>Seu servidor local não está rodando na máquina nova</td><td>Suba o 9router em <code>127.0.0.1:20128</code> ou troque <code>baseURL</code>/<code>model</code> em <code>~/.config/opencode/opencode.json</code></td></tr>
+  <tr><td>Skills não aparecem no TUI</td><td>opencode ainda aberto na sessão antiga</td><td>Saia e abra de novo (config não é hot-reloaded)</td></tr>
+</table>
+
+<div class="callout ok"><b class="t">Pronto</b> — com isso sua máquina nova tem o mesmo opencode da anterior.
+Qualquer evolução futura: atualize os arquivos em <code>backup/</code> e commit, mantendo o pacote como fonte da verdade.</div>
+
+<p class="small" style="margin-top:40px">Pacote gerado em 08/08/2026 · opencode v1.18.15 · inventário completo em <code>backup/MANIFEST.md</code>.</p>
+
+</div>
+</body>
+</html>
